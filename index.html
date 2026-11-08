@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<title>ACE Produção</title>
+<style>
+:root{--navy:#353535;--blue:#545454;--ink:#1f1f1f;--muted:#6e6e6e;--line:#e3e3e3;--bg:#f5f5f5;--green:#575757;--red:#4d4d4d;--amber:#818181}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px Arial,Helvetica,sans-serif;padding-bottom:78px}
+header{background:linear-gradient(120deg,#353535,#515151);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:18px}header p{margin:3px 0 0;font-size:12px;color:#e6e6e6}
+main{max-width:640px;margin:0 auto;padding:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px #3131310a}
+h2{font-size:15px;margin:0 0 12px;color:var(--navy)}
+label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#454545}
+input,textarea,select{width:100%;padding:12px;border:1px solid #c7c7c7;border-radius:10px;font-size:16px;background:#fff;color:var(--ink);font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:3px solid #d2d2d2}
+textarea{min-height:70px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.big input{font-size:20px;font-weight:700;border-color:var(--blue);border-width:2px}
+.num-field{display:flex;gap:4px}
+.num-field button{width:44px;flex:none;padding:0;font-size:22px;background:#ededed;color:var(--navy)}
+.num-field input{text-align:center;font-weight:700;font-size:20px;padding:10px 2px}
+button{border:0;border-radius:10px;padding:13px;font-weight:700;font-size:15px;cursor:pointer}
+.primary{background:var(--blue);color:#fff;width:100%}
+.secondary{background:#ededed;color:#333333}
+.danger{background:#f4f4f4;color:var(--red)}
+.small{padding:8px 11px;font-size:12px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.seg button,.tog button{background:#f1f1f1;color:#454545;border:2px solid transparent;padding:12px 4px;font-size:13px;line-height:1.2}
+.seg button.on[data-w="sol"]{background:#f6f6f6;border-color:#b4b4b4;color:#4e4e4e}
+.seg button.on[data-w="parcial"]{background:#eeeeee;border-color:#9f9f9f;color:#414141}
+.seg button.on[data-w="chuva"]{background:#e5e5e5;border-color:#545454;color:#323232}
+.tog{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.tog button.on{background:#eeeeee;border-color:var(--green);color:#404040}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fafafa}
+.kpi.hl{background:#f1f1f1;border-color:#cecece}
+.kpi .l{font-size:11px;color:var(--muted);min-height:26px}
+.kpi .v{font-size:23px;font-weight:700;color:var(--navy);margin-top:3px}
+.kpi .s{font-size:11px;color:var(--muted);margin-top:2px}
+.warn{color:var(--red)}
+.err{color:var(--red);font-size:13px;min-height:16px;margin:6px 0}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:9}
+nav button{background:#fff;color:var(--muted);border-radius:0;padding:12px 4px;font-size:12px}
+nav button.on{color:var(--navy);box-shadow:inset 0 3px 0 var(--navy)}
+.hidden{display:none!important}
+.item{border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:9px;background:#fff}
+.item .top{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:14px;color:var(--navy)}
+.item .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:8px 0;font-size:12px;color:#515151}
+.item .nums b{display:block;font-size:16px;color:var(--ink)}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0}
+.tag{font-size:11px;background:#f1f1f1;color:#454545;border-radius:99px;padding:3px 8px;font-weight:700}
+.tag.rain{background:#e5e5e5}
+.obs{font-size:12px;color:#515151;white-space:pre-wrap;margin-top:4px}
+.item .act{display:flex;gap:8px;margin-top:8px}
+.item .act button{flex:1}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-size:11px}
+.help{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4}
+.empty{text-align:center;color:var(--muted);padding:18px;font-size:14px}
+.formula{background:#f8f8f8;color:#555555;border-radius:9px;padding:10px;font-size:12px;line-height:1.5;margin-top:10px}
+
+/* tema preto e branco */
+:root{--navy:#000;--blue:#000;--ink:#000;--muted:#555;--line:#bbb;--bg:#f4f4f4;--green:#000;--red:#000;--amber:#000}
+header{background:#000}
+.primary{background:#000;color:#fff}
+.secondary{background:#e6e6e6;color:#000}
+.danger{background:#fff;color:#000;border:2px solid #000}
+.seg button.on,.tog button.on{background:#000!important;color:#fff!important;border-color:#000!important}
+nav button.on{color:#000;box-shadow:inset 0 3px 0 #000;font-weight:700}
+.kpi.hl{background:#e6e6e6;border-color:#000}
+.warn{text-decoration:underline;font-weight:700}
+.tag{background:#e6e6e6;color:#000}
+.tag.rain{background:#cfcfcf}
+.formula{background:#f0f0f0;color:#000;border:1px solid #bbb}
+input:focus,textarea:focus,select:focus{outline:3px solid #888}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+</head>
+<body>
+<header>
+  <h1>ACE Produção</h1>
+  <p id="hdrInfo">Registro diário por quarteirão</p>
+</header>
+<main>
+
+<!-- ABA LANÇAR -->
+<section id="t-lancar">
+  <div class="card big">
+    <h2>Onde estou trabalhando</h2>
+    <div class="row">
+      <div><label for="area">Área / Bairro</label><input id="area" placeholder="Ex.: Centro" autocomplete="off"></div>
+      <div><label for="quart">Quarteirão atual</label><input id="quart" placeholder="Ex.: 12" autocomplete="off"></div>
+    </div>
+    <div class="help">O quarteirão só muda quando você alterar aqui. Ele continua o mesmo nos dias seguintes até você terminar.</div>
+  </div>
+
+  <div class="card">
+    <h2 id="formTitle">Produção do dia</h2>
+    <label for="date">Data</label>
+    <input id="date" type="date" style="margin-bottom:10px">
+
+    <div class="row">
+      <div><label>Trabalhados (inclui recuperados)</label><div class="num-field"><button type="button" data-s="worked" data-d="-1">−</button><input id="worked" type="number" inputmode="numeric" min="0" value="0"><button type="button" data-s="worked" data-d="1">+</button></div></div>
+      <div><label>Fechados</label><div class="num-field"><button type="button" data-s="closed" data-d="-1">−</button><input id="closed" type="number" inputmode="numeric" min="0" value="0"><button type="button" data-s="closed" data-d="1">+</button></div></div>
+    </div>
+    <div class="row">
+      <div><label>Recuperados</label><div class="num-field"><button type="button" data-s="recovered" data-d="-1">−</button><input id="recovered" type="number" inputmode="numeric" min="0" value="0"><button type="button" data-s="recovered" data-d="1">+</button></div></div>
+      <div><label>Recusados</label><div class="num-field"><button type="button" data-s="refused" data-d="-1">−</button><input id="refused" type="number" inputmode="numeric" min="0" value="0"><button type="button" data-s="refused" data-d="1">+</button></div></div>
+    </div>
+
+    <label>Tempo do dia</label>
+    <div class="seg" id="weather">
+      <button type="button" data-w="sol" class="on">☀️ Sem chuva</button>
+      <button type="button" data-w="parcial">🌦️ Parcialmente chuvoso</button>
+      <button type="button" data-w="chuva">🌧️ Dia de chuva</button>
+    </div>
+
+    <label>Atividades do dia</label>
+    <div class="tog" id="acts">
+      <button type="button" data-a="lira">LIRAa</button>
+      <button type="button" data-a="drone">Drone</button>
+      <button type="button" data-a="mecanico">Controle mecânico</button>
+    </div>
+
+    <label for="obs">Observações</label>
+    <textarea id="obs" maxlength="800" placeholder="Anotações do dia"></textarea>
+    <div class="err" id="err"></div>
+    <button class="primary" id="save">Salvar produção</button>
+    <button class="secondary" id="cancel" style="width:100%;margin-top:8px" hidden>Cancelar edição</button>
+  </div>
+
+  <div class="card">
+    <h2>Lançamentos desta data</h2>
+    <div id="dayList"></div>
+    <div class="empty hidden" id="dayEmpty">Nenhum lançamento nesta data.</div>
+    <div class="help">Use Editar para corrigir ou Excluir para apagar o dia trabalhado.</div>
+  </div>
+
+  <div class="card">
+    <h2>Resultado</h2>
+    <div class="kpis">
+      <div class="kpi hl"><div class="l">Produção homem/dia (H/D) de hoje</div><div class="v" id="rHD">—</div><div class="s" id="rHDs"></div></div>
+      <div class="kpi hl"><div class="l">Pendência total da área</div><div class="v" id="rPendArea">—</div><div class="s" id="rPendAreaS"></div></div>
+      <div class="kpi"><div class="l">Pendência do quarteirão atual</div><div class="v" id="rPendQ">—</div><div class="s" id="rPendQS"></div></div>
+      <div class="kpi"><div class="l">Cobertura do quarteirão</div><div class="v" id="rCovQ">—</div><div class="s" id="rCovQS"></div></div>
+    </div>
+    <div class="formula"><b>Fórmulas:</b> TF = fechados − recuperados; IM = trabalhados + TF; pendência = TF ÷ IM × 100. Recuperados já estão contados em Trabalhados (não são somados de novo no resumo); eles diminuem o TF e, por isso, reduzem a pendência (mesmo que o fechado tenha sido lançado em outro dia).</div>
+  </div>
+</section>
+
+<!-- ABA RESUMO -->
+<section id="t-resumo" class="hidden">
+  <div class="card">
+    <h2>Resumo por período</h2>
+    <div class="row">
+      <div><label for="pType">Período</label><select id="pType"><option value="day">Diário</option><option value="week" selected>Semanal</option><option value="ciclo">Ciclo (1 ao 6)</option></select></div>
+      <div><label for="pDate">Data de referência</label><input id="pDate" type="date"></div>
+    </div>
+    <div class="help" id="pLabel"></div>
+    <div id="cicloBox" class="hidden" style="margin-top:12px">
+      <label for="cYear">Ano dos ciclos</label>
+      <input id="cYear" type="number" inputmode="numeric" min="2020" max="2099" style="margin-bottom:10px">
+      <div class="tog" id="cicloBtns" style="grid-template-columns:repeat(3,1fr)"></div>
+      <div style="overflow:auto;margin-top:6px"><table><thead><tr><th>Ciclo</th><th>Dias</th><th>Trab.</th><th>H/D</th><th>Pend.</th></tr></thead><tbody id="cicloTable"></tbody></table></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="kpis" id="pKpis"></div>
+  </div>
+  <div class="card">
+    <h2>Por quarteirão no período</h2>
+    <div class="help" style="margin-top:8px"><b>Por dia</b></div>
+    <div style="overflow:auto"><table><thead><tr><th>Data</th><th>Clima</th><th>Trab.</th><th>Fech.</th><th>Recup.</th></tr></thead><tbody id="dBody"></tbody></table></div>
+    <div class="help" style="margin-top:8px"><b>Por quarteirão</b></div>
+    <div style="overflow:auto"><table><thead><tr><th>Quart.</th><th>Trab.</th><th>Fech.</th><th>Recup.</th><th>Pend.</th></tr></thead><tbody id="qBody"></tbody></table></div>
+    <div class="empty hidden" id="qEmpty">Sem lançamentos no período.</div>
+  </div>
+  <div class="card">
+    <button class="secondary" id="expPeriod" style="width:100%">Exportar período (CSV)</button>
+  </div>
+</section>
+
+<!-- ABA LIRAa -->
+<section id="t-lira" class="hidden">
+  <div class="card">
+    <h2>Todos os LIRAa</h2>
+    <div class="kpis" id="liraKpis"></div>
+    <button class="secondary" id="expLira" style="width:100%;margin-top:10px">Exportar LIRAa (CSV)</button>
+    <div class="help">Aparecem aqui todos os lançamentos marcados com LIRAa na tela Lançar. Para incluir ou tirar um dia, edite o lançamento.</div>
+  </div>
+  <div id="liraList"></div>
+  <div class="empty hidden" id="liraEmpty">Nenhum dia marcado como LIRAa.</div>
+</section>
+
+<!-- ABA HISTÓRICO -->
+<section id="t-hist" class="hidden">
+  <div class="card">
+    <h2>Histórico</h2>
+    <div class="row">
+      <div><label for="fQ">Filtrar quarteirão</label><input id="fQ" placeholder="Todos"></div>
+      <div><label for="fFrom">A partir de</label><input id="fFrom" type="date"></div>
+    </div>
+    <button class="secondary" id="expHist" style="width:100%">Exportar tudo (CSV)</button>
+  </div>
+  <div id="histList"></div>
+  <div class="empty hidden" id="histEmpty">Nenhum lançamento.</div>
+</section>
+
+</main>
+
+<nav>
+  <button data-tab="lancar" class="on">📝<br>Lançar</button>
+  <button data-tab="resumo">📊<br>Resumo</button>
+  <button data-tab="lira">🏠<br>LIRAa</button>
+  <button data-tab="hist">📋<br>Histórico</button>
+</nav>
+
+<script>
+const KEY='ace_mobile_registros_v1', CFG='ace_mobile_cfg_v1';
+const $=id=>document.getElementById(id);
+let records=load(), cfg=loadCfg(), editingId=null, weather='sol', acts={lira:false,drone:false,mecanico:false};
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+function loadCfg(){try{return JSON.parse(localStorage.getItem(CFG)||'{}')}catch(e){return {}}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(records))}catch(e){alert('Não foi possível salvar os dados neste navegador.')}}
+function saveCfg(){try{localStorage.setItem(CFG,JSON.stringify(cfg))}catch(e){}}
+
+const fmt=n=>Number(n).toLocaleString('pt-BR');
+const pct=n=>Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const today=()=>iso(new Date());
+const dBR=s=>{if(!s)return '—';const [y,m,d]=s.split('-');return `${d}/${m}/${y}`};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s||'').trim().toLowerCase();
+const WL={sol:'Sem chuva',parcial:'Parcialmente chuvoso',chuva:'Chuva'};
+
+/* ---------- Cálculos ---------- */
+function agg(list){
+  const s=k=>list.reduce((t,r)=>t+(Number(r[k])||0),0);
+  const worked=s('worked'),closed=s('closed'),recovered=s('recovered'),refused=s('refused');
+  const tf=closed-recovered, im=worked+tf;
+  return {worked,closed,recovered,refused,tf,im,
+    pend:im>0?tf*100/im:null, cov:im>0?worked*100/im:null};
+}
+function dayStats(list){ // dias e H/D
+  const byDate={};
+  list.forEach(r=>{byDate[r.date]=byDate[r.date]||{worked:0,w:'sol'};byDate[r.date].worked+=Number(r.worked)||0;
+    if(r.weather==='chuva')byDate[r.date].w='chuva';
+    else if(r.weather==='parcial'&&byDate[r.date].w!=='chuva')byDate[r.date].w='parcial';});
+  const dates=Object.keys(byDate), days=dates.length;
+  const totalW=dates.reduce((t,d)=>t+byDate[d].worked,0);
+  const dry=dates.filter(d=>byDate[d].w==='sol');
+  const dryW=dry.reduce((t,d)=>t+byDate[d].worked,0);
+  return {days,totalW,avg:days?totalW/days:0,
+    rainDays:dates.filter(d=>byDate[d].w==='chuva').length,
+    partialDays:dates.filter(d=>byDate[d].w==='parcial').length,
+    dryDays:dry.length,dryAvg:dry.length?dryW/dry.length:0};
+}
+const avgFmt=n=>Number(n).toLocaleString('pt-BR',{maximumFractionDigits:1});
+
+/* ---------- Formulário ---------- */
+function readForm(){return{
+  area:$('area').value.trim().replace(/\s+/g,' '),
+  quart:$('quart').value.trim().replace(/\s+/g,' '),
+  date:$('date').value,
+  worked:parseInt($('worked').value,10),closed:parseInt($('closed').value,10),
+  recovered:parseInt($('recovered').value,10),refused:parseInt($('refused').value,10),
+  weather,lira:acts.lira,drone:acts.drone,mecanico:acts.mecanico,obs:$('obs').value.trim()}}
+
+function recordsExcludingEdit(){return records.filter(r=>r.id!==editingId)}
+
+function preview(){
+  const f=readForm();
+  const num=[f.worked,f.closed,f.recovered,f.refused].map(n=>Number.isFinite(n)?n:0);
+  const cur={...f,worked:num[0],closed:num[1],recovered:num[2],refused:num[3]};
+  const base=recordsExcludingEdit();
+  // H/D do dia: soma de todos os lançamentos da mesma data
+  const sameDay=base.filter(r=>r.date===f.date).concat([cur]);
+  const hd=sameDay.reduce((t,r)=>t+(Number(r.worked)||0),0);
+  $('rHD').textContent=fmt(hd);
+  $('rHDs').textContent=WL[weather]+(acts.lira?' • LIRAa':'')+(acts.drone?' • Drone':'')+(acts.mecanico?' • Mec.':'');
+  // quarteirão
+  const qList=base.filter(r=>norm(r.area)===norm(f.area)&&norm(r.quart)===norm(f.quart)).concat([cur]);
+  const q=agg(qList);
+  $('rPendQ').textContent=q.pend!==null?pct(q.pend):'—';
+  $('rPendQ').classList.toggle('warn',q.tf<0);
+  $('rPendQS').textContent=`TF ${fmt(q.tf)} • IM ${fmt(q.im)}`;
+  $('rCovQ').textContent=q.cov!==null?pct(q.cov):'—';
+  $('rCovQS').textContent=`${fmt(qList.length)} lançamento(s)`;
+  // área total
+  const aList=(f.area?base.filter(r=>norm(r.area)===norm(f.area)):base).concat([cur]);
+  const a=agg(aList);
+  $('rPendArea').textContent=a.pend!==null?pct(a.pend):'—';
+  $('rPendArea').classList.toggle('warn',a.tf<0);
+  $('rPendAreaS').textContent=`TF ${fmt(a.tf)} • IM ${fmt(a.im)}`;
+  $('hdrInfo').textContent=(f.area?f.area+' • ':'')+(f.quart?'Quarteirão '+f.quart:'Informe o quarteirão');
+  renderDayList();
+}
+
+function renderDayList(){
+  const d=$('date').value,rs=records.filter(r=>r.date===d);
+  $('dayList').innerHTML=rs.map(r=>{
+    const c=agg([r]),em=r.id===editingId;
+    return `<div class="item" style="${em?'border:2px solid #000':''}"><div class="top"><span>${r.area?esc(r.area)+' • ':''}Quart. ${esc(r.quart)}</span><span>${em?'em edição':esc(WL[r.weather]||'Sem chuva')}</span></div>
+    <div class="nums"><div><b>${fmt(r.worked)}</b>Trab.</div><div><b>${fmt(r.closed)}</b>Fech.</div><div><b>${fmt(r.recovered)}</b>Recup.</div><div><b>${fmt(r.refused||0)}</b>Recus.</div></div>
+    <div class="help">Pend. ${c.pend!==null?pct(c.pend):'—'}${r.lira?' • LIRAa':''}${r.drone?' • Drone':''}${r.mecanico?' • Mec.':''}</div>
+    <div class="act"><button class="secondary small" onclick="editRec('${r.id}')">Editar</button><button class="danger small" onclick="delRec('${r.id}')">Excluir</button></div></div>`}).join('');
+  $('dayEmpty').classList.toggle('hidden',rs.length>0);
+}
+
+function validate(f){
+  if(!f.quart)return 'Informe o quarteirão.';
+  if(!f.date)return 'Informe a data.';
+  if(![f.worked,f.closed,f.recovered,f.refused].every(n=>Number.isInteger(n)&&n>=0))return 'Use números inteiros iguais ou maiores que zero.';
+  if(f.recovered>f.worked)return 'Recuperados fazem parte dos trabalhados: não pode ser maior que Trabalhados.';
+  if(recordsExcludingEdit().some(r=>r.date===f.date&&norm(r.quart)===norm(f.quart)&&norm(r.area)===norm(f.area)))
+    return 'Já existe lançamento deste quarteirão nesta data. Edite pelo Histórico.';
+  return '';
+}
+
+function resetForm(keepDate){
+  editingId=null;
+  if(!keepDate)$('date').value=today();
+  ['worked','closed','recovered','refused'].forEach(id=>$(id).value=0);
+  $('obs').value='';
+  setWeather('sol');acts={lira:false,drone:false,mecanico:false};paintActs();
+  $('formTitle').textContent='Produção do dia';$('save').textContent='Salvar produção';$('cancel').hidden=true;$('err').textContent='';
+  preview();
+}
+function setWeather(w){weather=w;document.querySelectorAll('#weather button').forEach(b=>b.classList.toggle('on',b.dataset.w===w))}
+function paintActs(){document.querySelectorAll('#acts button').forEach(b=>b.classList.toggle('on',!!acts[b.dataset.a]))}
+
+document.querySelectorAll('#weather button').forEach(b=>b.addEventListener('click',()=>{setWeather(b.dataset.w);preview()}));
+document.querySelectorAll('#acts button').forEach(b=>b.addEventListener('click',()=>{acts[b.dataset.a]=!acts[b.dataset.a];paintActs();preview()}));
+document.querySelectorAll('.num-field button').forEach(b=>b.addEventListener('click',()=>{
+  const el=$(b.dataset.s);const v=Math.max(0,(parseInt(el.value,10)||0)+Number(b.dataset.d));el.value=v;preview()}));
+['area','quart'].forEach(id=>$(id).addEventListener('input',()=>{cfg.area=$('area').value;cfg.quart=$('quart').value;saveCfg();preview()}));
+['date','worked','closed','recovered','refused','obs'].forEach(id=>$(id).addEventListener('input',preview));
+
+$('save').addEventListener('click',()=>{
+  const f=readForm(),e=validate(f);$('err').textContent=e;if(e)return;
+  cfg.area=f.area;cfg.quart=f.quart;saveCfg();
+  if(editingId)records=records.map(r=>r.id===editingId?{...f,id:editingId}:r);
+  else records.push({...f,id:String(Date.now())+Math.random().toString(16).slice(2)});
+  records.sort((a,b)=>a.date.localeCompare(b.date));
+  persist();resetForm(true);renderAll();
+  alert('Produção salva!');
+});
+$('cancel').addEventListener('click',()=>resetForm(false));
+
+/* ---------- Histórico ---------- */
+function histRows(){
+  const q=norm($('fQ').value),from=$('fFrom').value;
+  return records.filter(r=>(!q||norm(r.quart).includes(q))&&(!from||r.date>=from)).sort((a,b)=>b.date.localeCompare(a.date));
+}
+function renderHist(){
+  const rs=histRows();
+  $('histList').innerHTML=rs.map(r=>{
+    const c=agg([r]);
+    const tags=[`<span class="tag ${r.weather==='sol'?'':'rain'}">${esc(WL[r.weather]||'Sem chuva')}</span>`,
+      r.lira?'<span class="tag">LIRAa</span>':'',r.drone?'<span class="tag">Drone</span>':'',r.mecanico?'<span class="tag">Controle mecânico</span>':''].join('');
+    return `<div class="item"><div class="top"><span>${dBR(r.date)}</span><span>${r.area?esc(r.area)+' • ':''}Quart. ${esc(r.quart)}</span></div>
+    <div class="tags">${tags}</div>
+    <div class="nums"><div><b>${fmt(r.worked)}</b>Trab.</div><div><b>${fmt(r.closed)}</b>Fech.</div><div><b>${fmt(r.recovered)}</b>Recup.</div><div><b>${fmt(r.refused||0)}</b>Recus.</div></div>
+    <div class="help">TF ${fmt(c.tf)} • IM ${fmt(c.im)} • Pend. ${c.pend!==null?pct(c.pend):'—'}</div>
+    ${r.obs?`<div class="obs">${esc(r.obs)}</div>`:''}
+    <div class="act"><button class="secondary small" onclick="editRec('${r.id}')">Editar</button><button class="danger small" onclick="delRec('${r.id}')">Excluir</button></div></div>`}).join('');
+  $('histEmpty').classList.toggle('hidden',rs.length>0);
+}
+window.editRec=id=>{
+  const r=records.find(x=>x.id===id);if(!r)return;editingId=id;
+  $('area').value=r.area||'';$('quart').value=r.quart||'';$('date').value=r.date;
+  ['worked','closed','recovered','refused'].forEach(k=>$(k).value=r[k]??0);
+  $('obs').value=r.obs||'';setWeather(r.weather||'sol');acts={lira:!!r.lira,drone:!!r.drone,mecanico:!!r.mecanico};paintActs();
+  $('formTitle').textContent='Editar lançamento';$('save').textContent='Salvar alterações';$('cancel').hidden=false;$('err').textContent='';
+  tab('lancar');preview();window.scrollTo({top:0,behavior:'smooth'});
+};
+window.delRec=id=>{
+  const r=records.find(x=>x.id===id);if(!r)return;
+  if(!confirm(`Excluir o lançamento de ${dBR(r.date)} (quarteirão ${r.quart})?`))return;
+  records=records.filter(x=>x.id!==id);persist();renderAll();preview();
+};
+$('fQ').addEventListener('input',renderHist);$('fFrom').addEventListener('input',renderHist);
+
+/* ---------- Resumo por período ---------- */
+function periodRange(type,ds){
+  const d=new Date(ds+'T12:00:00');let s=new Date(d),e=new Date(d),label='';
+  if(type==='day')label='Dia '+dBR(ds);
+  if(type==='week'){const k=(d.getDay()+6)%7;s.setDate(d.getDate()-k);e=new Date(s);e.setDate(s.getDate()+6);label=`Semana de ${dBR(iso(s))} a ${dBR(iso(e))} (seg a dom)`}
+  if(type==='ciclo'){const b=Math.floor(d.getMonth()/2);s=new Date(d.getFullYear(),b*2,1,12);e=new Date(d.getFullYear(),b*2+2,0,12);
+    const nm=['jan-fev','mar-abr','mai-jun','jul-ago','set-out','nov-dez'][b];label=`${b+1}º Ciclo (${nm}) de ${d.getFullYear()}`}
+  return{start:iso(s),end:iso(e),label};
+}
+function periodRows(){const g=periodRange($('pType').value,$('pDate').value||today());return records.filter(r=>r.date>=g.start&&r.date<=g.end).sort((a,b)=>a.date.localeCompare(b.date))}
+function renderPeriod(){
+  const g=periodRange($('pType').value,$('pDate').value||today()),rs=periodRows(),a=agg(rs),ds=dayStats(rs);
+  $('pLabel').textContent=g.label;renderCiclos();
+  const k=(l,v,s,hl)=>`<div class="kpi ${hl?'hl':''}"><div class="l">${l}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
+  const cnt=key=>new Set(rs.filter(r=>r[key]).map(r=>r.date)).size;
+  $('pKpis').innerHTML=
+    k('Dias com produção',fmt(ds.days),`${ds.dryDays} sem chuva • ${ds.partialDays} parcial • ${ds.rainDays} chuva`,false)+
+    k('Média H/D (todos os dias)',avgFmt(ds.avg),'Trabalhados ÷ dias',true)+
+    k('Média H/D (dias sem chuva)',ds.dryDays?avgFmt(ds.dryAvg):'—','Só dias sem chuva',false)+
+    k('Total trabalhados',fmt(a.worked),'',false)+
+    k('Fechados / Recuperados',`${fmt(a.closed)} / ${fmt(a.recovered)}`,'',false)+
+    k('Recusados',fmt(a.refused),'',false)+
+    k('Pendência do período',a.pend!==null?pct(a.pend):'—',`TF ${fmt(a.tf)} • IM ${fmt(a.im)}`,true)+
+    k('Cobertura do período',a.cov!==null?pct(a.cov):'—','',false)+
+    k('LIRAa / Drone / Mec.',`${cnt('lira')} / ${cnt('drone')} / ${cnt('mecanico')}`,'dias com a atividade',false);
+  const byQ={};rs.forEach(r=>{const key=(r.area?r.area+' | ':'')+r.quart;(byQ[key]=byQ[key]||[]).push(r)});
+  const rows=Object.keys(byQ).sort().map(key=>{const c=agg(byQ[key]);return `<tr><td>${esc(key)}</td><td>${fmt(c.worked)}</td><td>${fmt(c.closed)}</td><td>${fmt(c.recovered)}</td><td>${c.pend!==null?pct(c.pend):'—'}</td></tr>`}).join('');
+  const byD={};rs.forEach(r=>{(byD[r.date]=byD[r.date]||[]).push(r)});
+  const WLb={sol:'Sol',parcial:'Parcial',chuva:'Chuva'};
+  $('dBody').innerHTML=Object.keys(byD).sort().map(d=>{const c=agg(byD[d]);const w=byD[d].some(r=>r.weather==='chuva')?'chuva':byD[d].some(r=>r.weather==='parcial')?'parcial':'sol';
+    return `<tr><td>${dBR(d)}</td><td>${WLb[w]}</td><td>${fmt(c.worked)}</td><td>${fmt(c.closed)}</td><td>${fmt(c.recovered)}</td></tr>`}).join('');
+  $('qBody').innerHTML=rows;$('qEmpty').classList.toggle('hidden',rs.length>0);
+}
+const CICLO_NOMES=['jan-fev','mar-abr','mai-jun','jul-ago','set-out','nov-dez'];
+function renderCiclos(){
+  const box=$('cicloBox'),on=$('pType').value==='ciclo';
+  box.classList.toggle('hidden',!on);if(!on)return;
+  const d=new Date(($('pDate').value||today())+'T12:00:00'),year=d.getFullYear(),sel=Math.floor(d.getMonth()/2);
+  $('cYear').value=year;
+  $('cicloBtns').innerHTML=CICLO_NOMES.map((n,i)=>`<button type="button" class="${i===sel?'on':''}" onclick="pickCiclo(${i})">Ciclo ${i+1}<br><small>${n}</small></button>`).join('');
+  $('cicloTable').innerHTML=CICLO_NOMES.map((n,i)=>{
+    const s=`${year}-${String(i*2+1).padStart(2,'0')}-01`,e=`${year}-${String(i*2+2).padStart(2,'0')}-31`;
+    const rs=records.filter(r=>r.date>=s&&r.date<=e),a=agg(rs),ds=dayStats(rs);
+    return `<tr onclick="pickCiclo(${i})" style="${i===sel?'background:#f1f1f1;font-weight:700':''}"><td>${i+1}º (${n})</td><td>${ds.days}</td><td>${fmt(a.worked)}</td><td>${ds.days?avgFmt(ds.avg):'—'}</td><td>${a.pend!==null?pct(a.pend):'—'}</td></tr>`}).join('');
+}
+window.pickCiclo=i=>{
+  const y=Number($('cYear').value)||new Date().getFullYear();
+  $('pDate').value=`${y}-${String(i*2+1).padStart(2,'0')}-01`;renderPeriod();
+};
+$('cYear').addEventListener('change',()=>{
+  const y=Number($('cYear').value);if(!y||y<2020||y>2099)return;
+  const m=new Date(($('pDate').value||today())+'T12:00:00').getMonth();
+  $('pDate').value=`${y}-${String(m+1).padStart(2,'0')}-01`;renderPeriod();
+});
+$('pType').addEventListener('change',renderPeriod);$('pDate').addEventListener('input',renderPeriod);
+
+/* ---------- CSV ---------- */
+function csv(name,rs){
+  const head=['Data','Área','Quarteirão','Trabalhados','Fechados','Recuperados','Recusados','TF','IM','Pendência (%)','Cobertura (%)','Tempo','LIRAa','Drone','Controle mecânico','Observações'];
+  const rows=[head,...rs.map(r=>{const c=agg([r]);return[r.date,r.area||'',r.quart,r.worked,r.closed,r.recovered,r.refused||0,c.tf,c.im,c.pend!==null?c.pend.toFixed(2):'',c.cov!==null?c.cov.toFixed(2):'',WL[r.weather]||'',r.lira?'sim':'não',r.drone?'sim':'não',r.mecanico?'sim':'não',r.obs||'']})];
+  const text='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const a=document.createElement('a'),u=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8;'}));
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
+}
+$('expHist').addEventListener('click',()=>csv('producao_ace.csv',histRows().slice().reverse()));
+$('expPeriod').addEventListener('click',()=>csv('periodo_ace.csv',periodRows()));
+
+/* ---------- LIRAa ---------- */
+function liraRows(){return records.filter(r=>r.lira).sort((a,b)=>b.date.localeCompare(a.date))}
+function renderLira(){
+  const rs=liraRows(),a=agg(rs),days=new Set(rs.map(r=>r.date)).size;
+  const k=(l,v,s)=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
+  $('liraKpis').innerHTML=k('Dias de LIRAa',fmt(days),'')+k('Trabalhados',fmt(a.worked),'')+
+    k('Fechados / Recuperados',`${fmt(a.closed)} / ${fmt(a.recovered)}`,'')+k('Pendência do LIRAa',a.pend!==null?pct(a.pend):'—',`TF ${fmt(a.tf)} • IM ${fmt(a.im)}`);
+  $('liraList').innerHTML=rs.map(r=>{
+    const c=agg([r]);
+    return `<div class="item"><div class="top"><span>${dBR(r.date)}</span><span>${r.area?esc(r.area)+' • ':''}Quart. ${esc(r.quart)}</span></div>
+    <div class="tags"><span class="tag ${r.weather==='sol'?'':'rain'}">${esc(WL[r.weather]||'Sem chuva')}</span>${r.drone?'<span class="tag">Drone</span>':''}${r.mecanico?'<span class="tag">Controle mecânico</span>':''}</div>
+    <div class="nums"><div><b>${fmt(r.worked)}</b>Trab.</div><div><b>${fmt(r.closed)}</b>Fech.</div><div><b>${fmt(r.recovered)}</b>Recup.</div><div><b>${fmt(r.refused||0)}</b>Recus.</div></div>
+    <div class="help">TF ${fmt(c.tf)} • IM ${fmt(c.im)} • Pend. ${c.pend!==null?pct(c.pend):'—'}</div>
+    ${r.obs?`<div class="obs">${esc(r.obs)}</div>`:''}
+    <div class="act"><button class="secondary small" onclick="editRec('${r.id}')">Editar</button><button class="danger small" onclick="delRec('${r.id}')">Excluir</button></div></div>`}).join('');
+  $('liraEmpty').classList.toggle('hidden',rs.length>0);
+}
+$('expLira').addEventListener('click',()=>csv('lira_ace.csv',liraRows().slice().reverse()));
+
+/* ---------- Abas ---------- */
+function tab(n){
+  ['lancar','resumo','lira','hist'].forEach(t=>$('t-'+t).classList.toggle('hidden',t!==n));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===n));
+  if(n==='resumo')renderPeriod();if(n==='hist')renderHist();if(n==='lira')renderLira();
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.tab)));
+function renderAll(){renderHist();renderPeriod();renderLira()}
+
+/* ---------- Início ---------- */
+$('area').value=cfg.area||'';$('quart').value=cfg.quart||'';
+$('date').value=today();$('pDate').value=today();
+setWeather('sol');paintActs();preview();renderAll();
+</script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>
